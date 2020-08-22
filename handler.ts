@@ -44,13 +44,13 @@ export const statusCheck: APIGatewayProxyHandler = async (_event, _context) => {
 
     if (0.9 <= security) {
       status = NetworkSecurityStatus.INEFFICIENT;
-    } else if (0.75 < this.networkSecurity && this.networkSecurity < 0.9) {
+    } else if (0.75 < security && security < 0.9) {
       status = NetworkSecurityStatus.OVERBONDED;
-    } else if (0.60 <= this.networkSecurity && this.networkSecurity <= 0.75) {
+    } else if (0.60 <= security && security <= 0.75) {
       status = NetworkSecurityStatus.OPTIMAL;
-    } else if (0.50 <= this.networkSecurity && this.networkSecurity < 0.60) {
+    } else if (0.50 <= security && security < 0.60) {
       status = NetworkSecurityStatus.UNDERBONDED;
-    } else if (this.networkSecurity < 0.50) {
+    } else if (security < 0.50) {
       status = NetworkSecurityStatus.INSECURE;
     }
 
