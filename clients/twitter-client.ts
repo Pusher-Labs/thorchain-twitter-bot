@@ -22,39 +22,33 @@ export class TwitterClient {
 
     createStatusMessage(status: NetworkSecurityStatus): string {
 
-        let message;
+        // let message;
 
         switch (status) {
             case NetworkSecurityStatus.INEFFICIENT:
-                message = '🛑 Inefficient';
-                break;
+                return '🛑 Inefficient (very overbonded)';
 
             case NetworkSecurityStatus.OVERBONDED:
-                message = '⚠️ Overbonded';
-                break;
+                return '⚠️ Overbonded';
 
             case NetworkSecurityStatus.OPTIMAL:
-                message = '✅ Optimal';
-                break;
+                return '✅ Optimal';
 
             case NetworkSecurityStatus.UNDERBONDED:
-                message = '⚠️ Underbonded';
-                break;
+                return '⚠️ Underbonded';
 
             case NetworkSecurityStatus.INSECURE:
-                message = '🛑 Insecure';
-                break;
+                return '🛑 Insecure (very underbonded)';
 
             case NetworkSecurityStatus.DOWN:
-                message = '🛑 Down';
-                break;
+                return '🛑 Down';
         }
 
-        if (message) {
-            return `#THORChain Network Status: \r\n ${message}`
-        }
+        // if (message) {
+        //     return `#THORChain Network Status: ${message}`
+        // }
 
-        return;
+        // return;
 
     }
 

@@ -39,15 +39,16 @@ provider:
       Resource: "arn:aws:dynamodb:${file(config.yml):region}:*:table/thorchain-network-summary-${opt:stage, 'dev'}"  
 
 functions:
-  statusCheck:
-    handler: handler.statusCheck
-    events:
-      - schedule: rate(1 hour)
+  # statusCheck:
+  #   handler: handler.statusCheck
+  #   events:
+  #     - schedule: rate(1 hour)
 
   networkSnapshot:
     handler: handler.networkSnapshot
     events:
-      - schedule: cron(0 0 * * ? *)
+      - schedule: rate(6 hours)
+      # - schedule: cron(0 0 * * ? *)
 
 
 resources:

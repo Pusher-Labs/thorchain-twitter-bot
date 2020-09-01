@@ -170,44 +170,103 @@ export const statusCheck: APIGatewayProxyHandler = async (_event, _context) => {
 export const networkSnapshot: APIGatewayProxyHandler = async (_event, _context) => {
 
   const twitterClient = new TwitterClient();
+  // const baseUrl = await midgard();
 
     /**
    * Fetch network data from midgard
    */
-  const baseUrl = await midgard();
-  const req = await fetch(`${baseUrl}/v1/network`);
-  const json = await req.json();
+  
 
-  if (json && json.bondingROI && json.stakingROI && json.activeNodeCount && json.totalStaked && json.totalReserve) {
+   /** Temporarily until midgard update */
+  let baseUrl;
+  const ipsQuery = await fetch(`https://chaosnet-seed.thorchain.info`);
+  const ipsJson = await ipsQuery.json();
 
-    const bondingROI = ((+json.bondingROI) * 100).toFixed(2);
-    const stakingROI = ((+json.stakingROI) * 100).toFixed(2);
-    const activeNodeCount = json.activeNodeCount;
-    const totalStaked = ((+json.totalStaked) / 10 ** 8).toFixed(0);
-    const totalReserve = ((+json.totalReserve) / 10 ** 8).toFixed(0);
+  console.log('ipsJson is: ', ipsJson);
 
-    const message = `#THORChain Network Snapshot:
+  if (ipsJson && ipsJson.length > 0) {
+
+    const ip = ipsJson[Math.floor(Math.random() * ipsJson.length)];
+    baseUrl = `http://${ip}:8080`;
+
+  }
+
+  /** end */
+  
+  if (baseUrl) {
+
+    const req = await fetch(`${baseUrl}/v1/network`);
+    const json = await req.json();
+  
+    if (json && json.bondingROI && json.stakingROI && json.activeNodeCount && json.totalStaked && json.totalReserve) {
+  
+      const bondingROI = ((+json.bondingROI) * 100).toFixed(2);
+      const stakingROI = ((+json.stakingROI) * 100).toFixed(2);
+      const activeNodeCount = json.activeNodeCount;
+      const totalStaked = ((+json.totalStaked) / 10 ** 8).toFixed(0);
+      const totalReserve = ((+json.totalReserve) / 10 ** 8).toFixed(0);
+      let security;
+      let status: NetworkSecurityStatus;
+  
+      /**
+       * Network is up. Set security status
+       */
+      if (json.activeNodeCount > 0) {
+  
+        const activeBond = +json.bondMetrics.totalActiveBond;
+        security = activeBond / (activeBond + Number(json.totalStaked));
+  
+        if (0.9 <= security) {
+          status = NetworkSecurityStatus.INEFFICIENT;
+        } else if (0.75 < security && security < 0.9) {
+          status = NetworkSecurityStatus.OVERBONDED;
+        } else if (0.60 <= security && security <= 0.75) {
+          status = NetworkSecurityStatus.OPTIMAL;
+        } else if (0.50 <= security && security < 0.60) {
+          status = NetworkSecurityStatus.UNDERBONDED;
+        } else if (security < 0.50) {
+          status = NetworkSecurityStatus.INSECURE;
+        }
+  
+      /**
+       * All Nodes are down
+       */
+      } else {
+  
+        status = NetworkSecurityStatus.DOWN;
+        security = 0;
+  
+      }
+  
+      const statusMessage = twitterClient.createStatusMessage(status);
+  
+      const message = `#THORChain #Chaosnet Network Snapshot:
 Node Count: ${activeNodeCount}
 Staked: ${formatNumber(totalStaked)}
 Reserve: ${formatNumber(totalReserve)}
-Bonding ROI: ${bondingROI}%
-Staking ROI: ${stakingROI}%`;
-
-    const tweet = await twitterClient.post(message);
-    if (tweet && tweet.data) {
-      console.log(`tweeted: ${tweet.data.text}`);
+Bonding APY: ${bondingROI}%
+Staking APY: ${stakingROI}%
+Security Status: ${statusMessage}`;
+  
+      const tweet = await twitterClient.post(message);
+      if (tweet && tweet.data) {
+        console.log(`tweeted: ${tweet.data.text}`);
+      } else {
+        console.error('tweet unsuccessful');
+      }
+  
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: '👍 network snapshot cron run',
+        }, null, 2),
+      };
     } else {
-      console.error('tweet unsuccessful');
+      console.log('uh oh...');
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: '👍 network snapshot cron run',
-      }, null, 2),
-    };
   } else {
-    console.log('uh oh...');
+    console.error('NO BASE URL!');
   }
 
 }
