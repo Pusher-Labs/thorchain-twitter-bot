@@ -225,22 +225,18 @@ export const networkSnapshot: APIGatewayProxyHandler = async (_event, _context) 
             const bondingROI = ((+json.bondingROI) * 100).toFixed(2);
             const stakingROI = ((+json.stakingROI) * 100).toFixed(2);
             const activeNodeCount = json.activeNodeCount;
-            const totalStaked = ( ((+json.totalStaked) / 10 ** 8) * 2 );
+            const totalPooled = ( ((+json.totalStaked) / 10 ** 8) * 2 );
             const totalReserve = ((+json.totalReserve) / 10 ** 8);
 
-            const totalStakedUsd = (totalStaked * currentPrice).toFixed(0);
+            const totalPooledUsd = (totalPooled * currentPrice).toFixed(0);
             const totalReserveUsd = (totalReserve * currentPrice).toFixed(0);
-
 
             const activeBonds = json.activeBonds.map( (bondStr) => formatAssetUnits( Number(bondStr), 8 ));
             const standbyBonds = json.standbyBonds.map( (bondStr) => formatAssetUnits( Number(bondStr), 8 ) );
             const totalBonded = calculateTotalBonded(activeBonds, standbyBonds);
 
             const totalBondedUsd = (totalBonded * currentPrice).toFixed(0);
-            const totalCapitalUsd = ((totalStaked + totalBonded + totalReserve) * currentPrice).toFixed(0);
-
-
-
+            const totalCapitalUsd = ((totalPooled + totalBonded + totalReserve) * currentPrice).toFixed(0);
 
             let security;
             let status: NetworkSecurityStatus;
@@ -280,12 +276,12 @@ export const networkSnapshot: APIGatewayProxyHandler = async (_event, _context) 
             const message = `#THORChain #Chaosnet Network Snapshot:
 
 Node Count: ${activeNodeCount}
-Staked: $${formatNumber(totalStakedUsd)}
-Reserve: $${formatNumber(totalReserveUsd)}
-Bonded: $${formatNumber(totalBondedUsd)}
-Capital: $${formatNumber(totalCapitalUsd)}
-Bonding APY: ${bondingROI}%
-Staking APY: ${stakingROI}%
+Pooled Capital: $${formatNumber(totalPooledUsd)}
+Reserve Capital: $${formatNumber(totalReserveUsd)}
+Nodes Capital: $${formatNumber(totalBondedUsd)}
+Total Capital: $${formatNumber(totalCapitalUsd)}
+Node APY: ${bondingROI}%
+Pool APY: ${stakingROI}%
 Security Status: ${statusMessage}`;
         
             const tweet = await twitterClient.post(message);
