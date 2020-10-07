@@ -188,10 +188,10 @@ export const networkSnapshot: APIGatewayProxyHandler = async (_event, _context) 
 
     const message = `#THORChain Network Snapshot:
 Node Count: ${activeNodeCount}
-Staked: ${formatNumber(totalStaked)}
+Pooled Capital: ${formatNumber(totalStaked)}
 Reserve: ${formatNumber(totalReserve)}
-Bonding ROI: ${bondingROI}%
-Staking ROI: ${stakingROI}%`;
+Node APY: ${bondingROI}%
+Pool APY: ${stakingROI}%`;
 
     const tweet = await twitterClient.post(message);
     if (tweet && tweet.data) {
