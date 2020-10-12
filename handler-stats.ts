@@ -32,7 +32,7 @@ const makeStatsMessage = async () => {
 
   const msg = `#THORChain ${date} Summary:
 
-RUNE Price: $${priceInUSD.toFixed(2)}
+$RUNE Price: $${priceInUSD.toFixed(2)}
 
 Users:
  Daily: ${json.dailyActiveUsers}
