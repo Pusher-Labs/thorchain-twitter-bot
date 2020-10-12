@@ -30,6 +30,7 @@ provider:
     TWITTER_ACCESS_TOKEN: ${file(config.yml):access_token}
     TWITTER_ACCESS_TOKEN_SECRET: ${file(config.yml):access_token_secret}
     TWITTER_BEARER_TOKEN: ${file(config.yml):bearer_token}
+    BEPSWAP_STATS_API: ${file(config.yml):bepswap_stats_api}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -49,7 +50,14 @@ functions:
     events:
       - schedule: rate(6 hours)
       # - schedule: cron(0 0 * * ? *)
-
+  tweetStats:
+    handler: handler.tweetStats
+    events:
+      - schedule: rate(1 day)
+      # - schedule: cron(0 13 * * *)
+      # - http:
+      #     path: /debug
+      #     method: GET
 
 resources:
   Resources:

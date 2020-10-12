@@ -4,6 +4,7 @@ import 'source-map-support/register';
 import * as fetch from 'node-fetch';
 import { NetworkStatusClient } from './clients/network-status-client';
 import { TwitterClient } from './clients/twitter-client';
+export { tweetStats } from './handler-stats'
 
 /**
  * axois doesn't play nice with webpack
