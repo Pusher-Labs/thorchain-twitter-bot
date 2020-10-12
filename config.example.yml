@@ -4,3 +4,4 @@ bearer_token: XXX
 access_token: XXX
 access_token_secret: XXX
 region: us-east-1
+bepswap_stats_api: https://some-api.com

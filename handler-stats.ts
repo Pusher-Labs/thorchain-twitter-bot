@@ -31,6 +31,9 @@ const makeStatsMessage = async () => {
   const date = formatDate(new Date(), "PP");
 
   const msg = `#THORChain ${date} Summary:
+
+RUNE Price: $${priceInUSD.toFixed(2)}
+
 Users:
  Daily: ${json.dailyActiveUsers}
  Monthly: ${json.monthlyActiveUsers}
@@ -44,9 +47,9 @@ Txs:
 Volume:
  Last 24hr: $${json.totalVolume24hr}
 
-Pools: ${json.poolCount}
-Earned: $${json.totalEarned}
-Deposited: $${json.totalStaked}
+Pools: 
+  Count: ${json.poolCount}
+  Total Earned: $${json.totalEarned}
 `;
   return msg;
 };
